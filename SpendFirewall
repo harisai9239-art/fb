@@ -1,0 +1,90 @@
+SpendFirewall
+
+                    DEVELOPMENT
+                         │
+                         ▼
+                  Everything local
+                         │
+                         ▼
+                    BETA
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+        Free/cheap hosting     Managed DB
+              │
+              ▼
+                    PRODUCTION
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+          API servers           PostgreSQL
+              │
+              ▼
+        Redis / workers
+
+Exactly. Then ₹0 is our engineering constraint until the product has evidence of demand.
+
+Next, I’d have your coding agent build the local V2 in this order:
+
+Local Docker environment
+FastAPI
+PostgreSQL
+Redis
+Next.js
+Python SDK
+Provider abstraction
+MockProvider
+OpenAIProvider interface ready, but no paid calls required
+Execution engine
+Start execution
+Track requests/tokens/cost
+Maintain a budget reservation
+Safety engine
+Budget enforcement
+Rate limits
+Loop detection
+Cost-spike detection
+Projected-cost limit
+ALLOW → WARN → PAUSE → TERMINATE
+Prediction
+Start with deterministic estimates
+Store execution history
+Calculate P50/P95
+Recommend a budget
+Dashboard
+Current spend
+Running executions
+Forecast
+Anomalies
+Prevented spend
+Policies
+Attack/testing simulator
+100 normal calls
+runaway loop
+concurrent budget race
+provider failure
+retry storm
+token explosion
+The first milestone
+
+We should be able to run this entirely on your computer:
+$10 budget
+      ↓
+Mock AI workload
+      ↓
+normal execution
+      ↓
+runaway behavior
+      ↓
+cost spikes
+      ↓
+Firewall detects it
+      ↓
+EXECUTION TERMINATED
+      ↓
+$X spending prevented
+No paid API. No cloud. No domain. No database bill. No marketing spend.
+
+Once that works, we can connect one real provider and test the complete path with a tiny controlled amount.
+
+And I would make the coding agent prove the concurrency/budget enforcement with automated tests before we ever expose this to a real customer. A cost-protection product that itself occasionally lets a customer exceed their budget would destroy trust immediately.
